@@ -14,6 +14,9 @@ import CheckoutModal from './components/CheckoutModal';
 import ThankYouView from './components/ThankYouView';
 import AccountView from './components/AccountView';
 import AdminDashboard from './components/AdminDashboard';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import RefundPolicy from './components/RefundPolicy';
+import AboutUs from './components/AboutUs';
 import ThreeStepSlider from './components/ThreeStepSlider';
 import businessBanner from './assets/images/business_banner_1784185423899.jpg';
 
@@ -773,31 +776,22 @@ export default function App() {
                 {/* Quick Link Buttons (Row of Capsules) */}
                 <div className="flex flex-wrap gap-1.5">
                   <button 
-                    onClick={() => setActivePolicy({
-                      title: "Privacy Policy",
-                      content: "At Pulseshop, accessible from www.pulseshop.in, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Pulseshop and how we use it. We collect information such as your name, email, and phone number to provide you with personalized learning resources and seamless course delivery. We do not sell or share your personal data with third-party marketing companies."
-                    })}
+                    onClick={() => setActiveTab('privacy')}
                     className="bg-[#223069] text-white text-[9px] font-bold px-2.5 py-1 rounded-full hover:bg-sky-600 transition-colors"
                   >
                     Privacy Policy
                   </button>
                   <button 
-                    onClick={() => setActivePolicy({
-                      title: "Refund & Return Policy",
-                      content: "We want you to be completely satisfied with our learning programs. Since Pulseshop offers digital products and video courses, once access is granted and materials are downloaded, we generally maintain a 7-day refund policy. If you have not downloaded the core resources or are unsatisfied with the video structure within 7 days of purchase, you can contact us at pulseshop580@gmail.com with your order details for a refund assessment."
-                    })}
+                    onClick={() => setActiveTab('refund')}
                     className="bg-[#223069] text-white text-[9px] font-bold px-2.5 py-1 rounded-full hover:bg-sky-600 transition-colors"
                   >
-                    Refund & Refund Policy
+                    Refund & Return Policy
                   </button>
                   <button 
-                    onClick={() => setActivePolicy({
-                      title: "Terms & Conditions",
-                      content: "Welcome to Pulseshop! These terms and conditions outline the rules and regulations for the use of Pulseshop's Website, located at www.pulseshop.in. By accessing this website we assume you accept these terms and conditions. Do not continue to use Pulseshop if you do not agree to take all of the terms and conditions stated on this page. The content, courses, and digital materials provided are for personal educational use only and cannot be resold or redistributed without express permission."
-                    })}
+                    onClick={() => setActiveTab('about')}
                     className="bg-[#223069] text-white text-[9px] font-bold px-2.5 py-1 rounded-full hover:bg-sky-600 transition-colors"
                   >
-                    Terms & Conditions
+                    About Us
                   </button>
                   <button 
                     onClick={() => setActivePolicy({
@@ -846,22 +840,19 @@ export default function App() {
           />
         )}
 
-        {/* TAB 5, 6, 7: POLICY/ABOUT VIEWS */}
-        {(activeTab === 'privacy' || activeTab === 'refund' || activeTab === 'about') && (
-          <div className="p-4 bg-white min-h-screen">
-            <h2 className="text-xl font-bold mb-4">
-              {activeTab === 'privacy' ? 'Privacy Policy' : activeTab === 'refund' ? 'Refund Policy' : 'About'}
-            </h2>
-            <p className="text-slate-600">
-              {activeTab === 'privacy' ? 'Privacy policy content...' : activeTab === 'refund' ? 'Refund policy content...' : 'About content...'}
-            </p>
-            <button 
-              onClick={() => setActiveTab('home')}
-              className="mt-4 text-indigo-600 underline"
-            >
-              Back to Home
-            </button>
-          </div>
+        {/* TAB 5: PRIVACY POLICY VIEW */}
+        {activeTab === 'privacy' && (
+          <PrivacyPolicy onBack={() => setActiveTab('home')} />
+        )}
+
+        {/* TAB 6: REFUND POLICY VIEW */}
+        {activeTab === 'refund' && (
+          <RefundPolicy onBack={() => setActiveTab('home')} />
+        )}
+
+        {/* TAB 7: ABOUT US VIEW */}
+        {activeTab === 'about' && (
+          <AboutUs onBack={() => setActiveTab('home')} />
         )}
 
       </main>
