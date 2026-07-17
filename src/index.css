@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-spin-slow: spin 12s linear infinite;
+  --animate-bounce-slow: bounce 3s ease-in-out infinite;
+  --animate-fade-in: fadeIn 0.35s ease-out forwards;
+  --animate-slide-in: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes fadeIn {
+    from { 
+      opacity: 0; 
+      transform: translateY(6px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+  
+  @keyframes slideIn {
+    from { 
+      transform: translateX(-100%); 
+    }
+    to { 
+      transform: translateX(0); 
+    }
+  }
+}
+
+/* Custom Safe Area Utilities for Mobile */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Base styling overrides */
+body {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  overflow-x: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Custom scrollbars inside Chat & Lists */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.15);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.3);
+}

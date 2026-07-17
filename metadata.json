@@ -1,0 +1,6 @@
+{
+  "name": "pulseshop",
+  "description": "A mobile-friendly landing page for pulseshop business ideas and plans, designed to help users learn online business setup and start earning.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
