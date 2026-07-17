@@ -98,6 +98,19 @@ export default function Sidebar({ isOpen, onClose, onNavToTab, isAdmin, purchase
                 <FileText className="w-5 h-5 text-emerald-500" />
                 <span>Downloads (डाउनलोड)</span>
               </button>
+              
+              {purchasedPlans.length > 0 && (
+                <a
+                  href="https://drive.google.com/drive/folders/1srUiWfChdz34SpmBzKFh8E8uXKm-Z4iA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-black hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg font-black text-[10px] transition-all active:scale-95 shadow-md border border-white/10"
+                  onClick={onClose}
+                >
+                  <span>PLAY</span>
+                  <Play className="w-3 h-3 fill-white text-white" />
+                </a>
+              )}
             </div>
           </div>
 
