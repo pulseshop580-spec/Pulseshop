@@ -481,7 +481,7 @@ export default function App() {
 
             {/* SIDE-BY-SIDE PLAN A & PLAN B GRID */}
             <section className="px-3 py-4 grid grid-cols-2 gap-3 bg-slate-50/50" id="plans-grid">
-              {PLANS.filter(p => !deletedPlanIds.includes(p.id)).map((plan) => {
+              {PLANS.map((plan) => {
                 const isUnlocked = user.purchasedPlans.includes(plan.id);
                 const isPlanA = plan.id === 'plan-a';
                 

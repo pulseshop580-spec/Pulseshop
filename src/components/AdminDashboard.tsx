@@ -110,31 +110,15 @@ export default function AdminDashboard({
                 <span className="text-xs font-black text-slate-800">
                   Order #{order.id}
                 </span>
-                <div className="flex items-center gap-2">
-                  <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
-                    order.status === 'approved'
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      : order.status === 'rejected'
-                      ? 'bg-red-50 text-red-800 border-red-200'
-                      : 'bg-amber-50 text-amber-800 border-amber-200 animate-pulse'
-                  }`}>
-                    {order.status === 'pending' ? 'Pending Approval' : order.status}
-                  </span>
-                  {onDeleteOrder && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (confirm('क्या आप इस ऑर्डर को डिलीट करना चाहते हैं?')) {
-                          onDeleteOrder(order.id);
-                        }
-                      }}
-                      className="p-1 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-50 transition-colors"
-                      title="Delete Order Record"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
+                <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
+                  order.status === 'approved'
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                    : order.status === 'rejected'
+                    ? 'bg-red-50 text-red-800 border-red-200'
+                    : 'bg-amber-50 text-amber-800 border-amber-200 animate-pulse'
+                }`}>
+                  {order.status === 'pending' ? 'Pending Approval' : order.status}
+                </span>
               </div>
 
               {/* Customer Details */}
@@ -210,8 +194,22 @@ export default function AdminDashboard({
                   </button>
                 </div>
               )}
-            </div>
 
+              {/* Delete Order option for cleanliness */}
+              {onDeleteOrder && (
+                <button
+                  onClick={() => {
+                    if (confirm('क्या आप इस ऑर्डर को डिलीट करना चाहते हैं?')) {
+                      onDeleteOrder(order.id);
+                    }
+                  }}
+                  className="absolute bottom-4 right-4 p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-slate-50 transition-colors"
+                  title="Delete Order Record"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           ))
         )}
       </div>
