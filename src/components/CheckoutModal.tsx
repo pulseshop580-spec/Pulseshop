@@ -5,7 +5,7 @@ import {
   Upload, FileUp, Download, Loader2, Calendar, Mail
 } from 'lucide-react';
 import { Plan, User, Order } from '../types';
-import phonepeQrImg from '../assets/images/phonepe_qr_1784210706026.jpg';
+import phonepeQrImg from '../assets/images/Paves.png';
 
 interface CheckoutModalProps {
   isOpen: boolean;
