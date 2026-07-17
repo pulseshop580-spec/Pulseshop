@@ -91,25 +91,13 @@ export default function Sidebar({ isOpen, onClose, onNavToTab, isAdmin, purchase
             
             {/* Moved Download Link here */}
             <div className="flex items-center justify-between w-full px-3 py-2.5 rounded-xl hover:bg-slate-50 text-slate-700 transition-colors">
-              <a
-                href="https://drive.google.com/drive/folders/1srUiWfChdz34SpmBzKFh8E8uXKm-Z4iA"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => { onNavToTab('home'); onClose(); }}
                 className="flex items-center gap-3 text-left hover:text-indigo-900"
-                onClick={onClose}
               >
                 <FileText className="w-5 h-5 text-emerald-500" />
                 <span>Downloads (डाउनलोड)</span>
-              </a>
-              {purchasedPlans.length > 0 && (
-                <button
-                  onClick={() => { onNavToTab('home'); onClose(); }}
-                  className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-bold text-xs"
-                >
-                  <Play className="w-4 h-4 fill-indigo-600" />
-                  <span>Play</span>
-                </button>
-              )}
+              </button>
             </div>
           </div>
 

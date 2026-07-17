@@ -29,27 +29,14 @@ export default function BottomNav({ activeTab, setActiveTab, hasPurchasedAny, pe
           <span className="text-[10px] tracking-wide">Home</span>
         </button>
 
-        {/* 2. Downloads (External Link) */}
-        <a
-          href="https://drive.google.com/drive/folders/1srUiWfChdz34SpmBzKFh8E8uXKm-Z4iA"
-          target="_blank"
-          rel="noopener noreferrer"
+        {/* 2. Downloads */}
+        <button
+          onClick={() => setActiveTab('home')}
           className="flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all text-slate-400 hover:text-emerald-600"
         >
           <Download className="w-5 h-5" />
           <span className="text-[10px] tracking-wide">Downloads</span>
-        </a>
-
-        {/* 2.5 Play (Shows after purchase) */}
-        {hasPurchasedAny && (
-          <button
-            onClick={() => setActiveTab('home')}
-            className="flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all text-indigo-600 hover:text-indigo-800"
-          >
-            <Play className="w-5 h-5 fill-indigo-600" />
-            <span className="text-[10px] font-bold tracking-wide">Play</span>
-          </button>
-        )}
+        </button>
 
         {/* 3. Account */}
         <button

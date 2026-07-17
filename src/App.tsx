@@ -118,7 +118,7 @@ export default function App() {
         const approvedOrder = { ...o, status: 'approved' as const };
         
         // If order matches the current user's email, unlock it on their profile
-        if (approvedOrder.customerEmail === user.email) {
+        if (approvedOrder.customerEmail.toLowerCase() === user.email.toLowerCase()) {
           setUser(prevUser => {
             const purchased = [...prevUser.purchasedPlans];
             if (!purchased.includes(approvedOrder.planId)) {
@@ -249,7 +249,7 @@ export default function App() {
       {/* HEADER COMPONENT */}
       <Header 
         cartCount={cartPlan ? 1 : 0}
-        hasPurchased={user.purchasedPlans.length > 0}
+        hasPurchased={user.purchasedPlans.length > 0 || orders.some(o => o.customerEmail.toLowerCase() === user.email.toLowerCase() && o.status === 'approved')}
         onMenuClick={() => setIsSidebarOpen(true)}
         onCartClick={() => {
           if (cartPlan) {

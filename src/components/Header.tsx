@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, ShoppingCart } from 'lucide-react';
+import { Menu, ShoppingCart, Play } from 'lucide-react';
 
 interface HeaderProps {
   cartCount: number;
@@ -28,6 +28,18 @@ export default function Header({ cartCount, hasPurchased, onMenuClick, onCartCli
       </div>
 
       <div className="flex items-center gap-4">
+        {hasPurchased && (
+          <a
+            href="https://drive.google.com/drive/folders/1srUiWfChdz34SpmBzKFh8E8uXKm-Z4iA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-black hover:bg-slate-800 text-white px-4 py-2 rounded-lg font-black text-xs transition-all active:scale-95 shadow-lg border border-white/10"
+            id="btn-header-play"
+          >
+            <span className="tracking-tighter">PLAY</span>
+            <Play className="w-4 h-4 fill-white text-white" />
+          </a>
+        )}
         <button 
           onClick={onCartClick}
           className="relative p-1.5 hover:bg-slate-800/50 rounded-full transition-colors active:scale-95"
