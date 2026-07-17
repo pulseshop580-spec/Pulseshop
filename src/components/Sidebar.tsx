@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, BookOpen, Star, HelpCircle, PhoneCall, ShieldCheck, Heart, FileText, Info } from 'lucide-react';
+import { X, BookOpen, Star, HelpCircle, PhoneCall, ShieldCheck, Heart, FileText, Info, Play } from 'lucide-react';
 import { Tab } from '../types';
 
 interface SidebarProps {
@@ -7,9 +7,10 @@ interface SidebarProps {
   onClose: () => void;
   onNavToTab: (tab: Tab) => void;
   isAdmin?: boolean;
+  purchasedPlans: string[];
 }
 
-export default function Sidebar({ isOpen, onClose, onNavToTab, isAdmin }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose, onNavToTab, isAdmin, purchasedPlans }: SidebarProps) {
   if (!isOpen) return null;
 
   return (
@@ -51,13 +52,6 @@ export default function Sidebar({ isOpen, onClose, onNavToTab, isAdmin }: Sideba
               <span>Home</span>
             </button>
             <button
-              onClick={() => { onNavToTab('downloads'); onClose(); }}
-              className="flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-indigo-900 transition-colors"
-            >
-              <FileText className="w-5 h-5 text-indigo-500" />
-              <span>Download</span>
-            </button>
-            <button
               onClick={() => { onNavToTab('privacy'); onClose(); }}
               className="flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-indigo-900 transition-colors"
             >
@@ -94,7 +88,31 @@ export default function Sidebar({ isOpen, onClose, onNavToTab, isAdmin }: Sideba
                 <span className="font-bold text-red-600">Admin Panel (एडमिन पैनल)</span>
               </button>
             )}
+            
+            {/* Moved Download Link here */}
+            <div className="flex items-center justify-between w-full px-3 py-2.5 rounded-xl hover:bg-slate-50 text-slate-700 transition-colors">
+              <a
+                href="https://drive.google.com/drive/folders/1srUiWfChdz34SpmBzKFh8E8uXKm-Z4iA"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-left hover:text-indigo-900"
+                onClick={onClose}
+              >
+                <FileText className="w-5 h-5 text-emerald-500" />
+                <span>Downloads (डाउनलोड)</span>
+              </a>
+              {purchasedPlans.length > 0 && (
+                <button
+                  onClick={() => { onNavToTab('home'); onClose(); }}
+                  className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-bold text-xs"
+                >
+                  <Play className="w-4 h-4 fill-indigo-600" />
+                  <span>Play</span>
+                </button>
+              )}
+            </div>
           </div>
+
 
           {/* Quick Help Box */}
           <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-4 flex flex-col gap-3">

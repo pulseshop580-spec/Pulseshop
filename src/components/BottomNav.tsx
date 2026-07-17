@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Download, User, ShieldCheck } from 'lucide-react';
+import { Home, Download, User, ShieldCheck, Play } from 'lucide-react';
 import { Tab } from '../types';
 
 interface BottomNavProps {
@@ -14,6 +14,8 @@ export default function BottomNav({ activeTab, setActiveTab, hasPurchasedAny, pe
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-xl px-2 py-1.5 pb-safe">
       <div className="max-w-md mx-auto flex items-center justify-around">
+        
+        {/* 1. Home */}
         <button
           onClick={() => setActiveTab('home')}
           className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all ${
@@ -27,24 +29,29 @@ export default function BottomNav({ activeTab, setActiveTab, hasPurchasedAny, pe
           <span className="text-[10px] tracking-wide">Home</span>
         </button>
 
-        <button
-          onClick={() => setActiveTab('downloads')}
-          className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all relative ${
-            activeTab === 'downloads'
-              ? 'text-indigo-600 font-bold scale-105 bg-indigo-50/60'
-              : 'text-slate-400 hover:text-slate-700'
-          }`}
-          id="nav-tab-downloads"
+        {/* 2. Downloads (External Link) */}
+        <a
+          href="https://drive.google.com/drive/folders/1srUiWfChdz34SpmBzKFh8E8uXKm-Z4iA"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all text-slate-400 hover:text-emerald-600"
         >
-          <div className="relative">
-            <Download className="w-5 h-5" />
-            {!hasPurchasedAny && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-white" />
-            )}
-          </div>
+          <Download className="w-5 h-5" />
           <span className="text-[10px] tracking-wide">Downloads</span>
-        </button>
+        </a>
 
+        {/* 2.5 Play (Shows after purchase) */}
+        {hasPurchasedAny && (
+          <button
+            onClick={() => setActiveTab('home')}
+            className="flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all text-indigo-600 hover:text-indigo-800"
+          >
+            <Play className="w-5 h-5 fill-indigo-600" />
+            <span className="text-[10px] font-bold tracking-wide">Play</span>
+          </button>
+        )}
+
+        {/* 3. Account */}
         <button
           onClick={() => setActiveTab('account')}
           className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all ${
@@ -58,6 +65,7 @@ export default function BottomNav({ activeTab, setActiveTab, hasPurchasedAny, pe
           <span className="text-[10px] tracking-wide">My Account</span>
         </button>
 
+        {/* 4. Admin */}
         {isAdmin && (
           <button
             onClick={() => setActiveTab('admin')}

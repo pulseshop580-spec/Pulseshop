@@ -10,7 +10,7 @@ import Header from './components/Header';
 import BottomNav from './components/BottomNav';
 import Sidebar from './components/Sidebar';
 import CheckoutModal from './components/CheckoutModal';
-import DownloadsView from './components/DownloadsView';
+// Removed DownloadsView import
 import ThankYouView from './components/ThankYouView';
 import AccountView from './components/AccountView';
 import AdminDashboard from './components/AdminDashboard';
@@ -219,8 +219,8 @@ export default function App() {
     }
 
     setIsCheckoutOpen(false);
-    // Automatically navigate to downloads page to show pending/unlocked course!
-    setActiveTab('downloads');
+    // Redirect to home after successful order placement
+    setActiveTab('home');
   };
 
   // Add a plan to cart
@@ -246,6 +246,7 @@ export default function App() {
       {/* HEADER COMPONENT */}
       <Header 
         cartCount={cartPlan ? 1 : 0}
+        hasPurchased={user.purchasedPlans.length > 0}
         onMenuClick={() => setIsSidebarOpen(true)}
         onCartClick={() => {
           if (cartPlan) {
@@ -262,6 +263,7 @@ export default function App() {
         onClose={() => setIsSidebarOpen(false)}
         onNavToTab={(tab) => setActiveTab(tab)}
         isAdmin={isAdmin}
+        purchasedPlans={user.purchasedPlans}
       />
 
       {/* MAIN CONTAINER */}
@@ -273,7 +275,7 @@ export default function App() {
             plan={thankYouData.plan}
             orderId={thankYouData.orderId}
             email={thankYouData.email}
-            onProceed={() => setActiveTab('downloads')}
+            onProceed={() => setActiveTab('home')}
           />
         )}
         {activeTab === 'home' && (
@@ -479,7 +481,7 @@ export default function App() {
 
             {/* SIDE-BY-SIDE PLAN A & PLAN B GRID */}
             <section className="px-3 py-4 grid grid-cols-2 gap-3 bg-slate-50/50" id="plans-grid">
-              {PLANS.map((plan) => {
+              {PLANS.filter(p => !deletedPlanIds.includes(p.id)).map((plan) => {
                 const isUnlocked = user.purchasedPlans.includes(plan.id);
                 const isPlanA = plan.id === 'plan-a';
                 
@@ -818,17 +820,6 @@ export default function App() {
             </footer>
 
           </div>
-        )}
-
-        {/* TAB 2: DOWNLOADS VIEW */}
-        {activeTab === 'downloads' && (
-          <DownloadsView 
-            user={user}
-            orders={orders}
-            onGoToHome={() => setActiveTab('home')}
-            onSelectPlan={(plan) => handleOpenCheckout(plan)}
-            onApproveOrder={handleApproveOrder}
-          />
         )}
 
         {/* TAB 3: ACCOUNT/DASHBOARD VIEW */}

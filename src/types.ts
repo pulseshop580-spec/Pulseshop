@@ -1,4 +1,4 @@
-export type Tab = 'home' | 'downloads' | 'account' | 'admin' | 'privacy' | 'refund' | 'about' | 'thankyou';
+export type Tab = 'home' | 'account' | 'admin' | 'privacy' | 'refund' | 'about' | 'thankyou';
 
 export interface Order {
   id: string;

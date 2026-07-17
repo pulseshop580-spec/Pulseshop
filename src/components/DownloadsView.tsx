@@ -158,53 +158,6 @@ export default function DownloadsView({ user, orders, onGoToHome, onSelectPlan, 
             RETRY PURCHASE (Pay ₹{PLANS.find(p => p.id === activePlanId)?.salePrice || '99'})
           </button>
         </div>
-      ) : !isPlanUnlocked(activePlanId) ? (
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 text-center flex flex-col items-center gap-5 my-2 shadow-sm animate-fade-in">
-          <div className="w-16 h-16 bg-red-50 rounded-full border border-red-200 flex items-center justify-center text-red-500">
-            <Lock className="w-8 h-8" />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <h3 className="text-lg font-extrabold text-slate-800">यह कोर्स अभी लॉक है!</h3>
-            <p className="text-xs text-slate-600 leading-relaxed px-2">
-              आपने अभी तक <span className="text-indigo-600 font-bold">{activePlanId === 'plan-a' ? 'Plan A' : 'Plan B'}</span> एक्टिवेट नहीं किया है। इसे अनलॉक करने के बाद आपको सभी विडियो लेक्चर्स और डाउनलोड लिंक्स तुरंत मिल जायेंगे।
-            </p>
-          </div>
-
-          {/* Quick value props list */}
-          <div className="w-full bg-slate-50/50 rounded-2xl p-4 border border-slate-100 text-left flex flex-col gap-3">
-            <div className="flex items-start gap-2.5 text-xs text-slate-600">
-              <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-              <span>{activePlanId === 'plan-a' ? '7 High-Quality Step-by-Step Videos' : '12+ Advanced Business setup Videos'}</span>
-            </div>
-            <div className="flex items-start gap-2.5 text-xs text-slate-600">
-              <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-              <span>UPI, Google Pay setup with Aadhar & PAN support</span>
-            </div>
-            <div className="flex items-start gap-2.5 text-xs text-slate-600">
-              <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-              <span>Free lifetime updates and new setup guidelines</span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              const selected = PLANS.find(p => p.id === activePlanId);
-              if (selected) onSelectPlan(selected);
-            }}
-            className="w-full bg-[#0051fa] hover:bg-[#0041cb] text-white font-black py-4 px-6 rounded-2xl transition-all shadow-lg active:scale-98 flex items-center justify-center gap-2 uppercase tracking-wide"
-          >
-            BUY NOW (Pay ₹{PLANS.find(p => p.id === activePlanId)?.salePrice || '99'})
-            <Sparkles className="w-4.5 h-4.5 text-amber-300" />
-          </button>
-
-          <button
-            onClick={onGoToHome}
-            className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold"
-          >
-            सभी प्लान देखें (View All Plans)
-          </button>
-        </div>
       ) : (
         /* CASE 2: PLAN IS UNLOCKED */
         <div className="flex flex-col gap-5">
