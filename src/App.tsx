@@ -346,7 +346,7 @@ export default function App() {
                 <div className="col-span-5 relative flex flex-col items-center justify-center">
                   
                   {/* Floating speech bubble */}
-                  <div className="absolute -top-7 right-[-4px] bg-[#e0f2fe] border border-sky-200 rounded-lg p-1.5 shadow-xs max-w-[110px] z-20 animate-bounce-slow">
+                  <div className="absolute -top-0 right-[-4px] bg-[#e0f2fe] border border-sky-200 rounded-lg p-1.5 shadow-xs max-w-[110px] z-20 animate-bounce-slow">
                     <p className="text-[7px] font-black text-[#13193e] text-center leading-normal font-sans">
                       एक Business Idea आपकी जिंदगी बदल सकती है
                     </p>
