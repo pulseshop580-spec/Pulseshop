@@ -3,22 +3,26 @@ import {
   Check, X, Clock, User, Phone, Mail, Calendar, 
   DollarSign, Eye, ShieldCheck, AlertCircle, Trash2, HelpCircle 
 } from 'lucide-react';
-import { Order } from '../types';
+import { Order, Plan } from '../types';
 
 interface AdminDashboardProps {
   orders: Order[];
+  plans: Plan[];
   onApprove: (orderId: string) => void;
   onReject: (orderId: string) => void;
   onDeleteOrder?: (orderId: string) => void;
+  onDeletePlan?: (planId: string) => void;
   onAddDemoOrder?: () => void;
   onGoToHome: () => void;
 }
 
 export default function AdminDashboard({ 
   orders, 
+  plans,
   onApprove, 
   onReject, 
   onDeleteOrder,
+  onDeletePlan,
   onAddDemoOrder,
   onGoToHome 
 }: AdminDashboardProps) {
@@ -208,6 +212,33 @@ export default function AdminDashboard({
             </div>
           ))
         )}
+      </div>
+
+      {/* Plans Management */}
+      <div className="mt-8">
+        <h3 className="text-sm font-black text-slate-900 mb-3">Manage Products/Plans</h3>
+        <div className="flex flex-col gap-3">
+          {plans.map(plan => (
+            <div key={plan.id} className="bg-white border border-slate-200 rounded-2xl p-4 flex justify-between items-center">
+              <div>
+                <p className="text-xs font-bold text-slate-800">{plan.name}</p>
+                <p className="text-[10px] text-slate-500">₹{plan.salePrice}</p>
+              </div>
+              {onDeletePlan && (
+                <button 
+                  onClick={() => {
+                    if (confirm(`क्या आप "${plan.name}" को डिलीट करना चाहते हैं?`)) {
+                      onDeletePlan(plan.id);
+                    }
+                  }}
+                  className="text-red-500 hover:bg-red-50 p-2 rounded-xl"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Screenshot Overlay Modal */}

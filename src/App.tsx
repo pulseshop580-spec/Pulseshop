@@ -67,6 +67,18 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const adminPassword = 'DDhj12@$';
 
+  const [deletedPlanIds, setDeletedPlanIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem('pulseshop_deleted_plans');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        // ignore
+      }
+    }
+    return [];
+  });
+
   const handleAdminLogin = (password: string) => {
     if (password === adminPassword) {
       setIsAdmin(true);
@@ -79,6 +91,14 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('pulseshop_orders', JSON.stringify(orders));
   }, [orders]);
+
+  useEffect(() => {
+    localStorage.setItem('pulseshop_deleted_plans', JSON.stringify(deletedPlanIds));
+  }, [deletedPlanIds]);
+
+  const handleDeletePlan = (planId: string) => {
+    setDeletedPlanIds(prev => [...prev, planId]);
+  };
 
   const handleOrderCreated = (newOrder: Order) => {
     setOrders(prev => {
@@ -825,9 +845,11 @@ export default function App() {
         {isAdmin && activeTab === 'admin' && (
           <AdminDashboard 
             orders={orders}
+            plans={PLANS.filter(p => !deletedPlanIds.includes(p.id))}
             onApprove={handleApproveOrder}
             onReject={handleRejectOrder}
             onDeleteOrder={handleDeleteOrder}
+            onDeletePlan={handleDeletePlan}
             onAddDemoOrder={handleAddDemoOrder}
             onGoToHome={() => setActiveTab('home')}
           />
