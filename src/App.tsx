@@ -729,35 +729,24 @@ export default function App() {
             </section>
 
             {/* MOTIVATIONAL NOTE / QUOTE BOX (PULSESHOP BRANDED) */}
-            <section className="px-3 pb-6 pt-2 bg-slate-50" id="motivational-quote-box">
-              <div className="bg-white border-2 border-amber-200/60 rounded-xl p-4 shadow-xs relative overflow-hidden max-w-md mx-auto">
-                {/* Visual decoration absolute elements */}
-                <div className="absolute top-[-20px] right-[-20px] w-16 h-16 bg-[#13193e]/5 rounded-full pointer-events-none" />
-                <div className="absolute bottom-[-15px] left-[-15px] w-12 h-12 bg-amber-400/5 rounded-full pointer-events-none" />
-
-                <div className="flex items-start gap-2.5">
-                  <div className="bg-amber-100 p-1.5 rounded-lg text-amber-700 flex-shrink-0 mt-0.5">
-                    <Sparkles className="w-4.5 h-4.5 animate-pulse" />
-                  </div>
-                  
-                  <div className="text-left">
-                    <h4 className="text-[11px] md:text-xs font-black text-[#13193e] uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                      <span>अपना खुद का बिज़नेस शुरू करें (Start Your Business)</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                    </h4>
-                    
-                    {/* Hindi Quote */}
-                    <p className="text-[10px] md:text-xs text-slate-800 font-extrabold leading-normal mb-2">
-                      &quot;दूसरों के बनाए रास्तों पर तो हर कोई चल लेता है... असली पहचान तो <span className="text-[#13193e] underline decoration-amber-400 font-black">Pulseshop</span> के साथ खुद का बिज़नेस शुरू करने से ही मिलती है! आज ही शुरुआत करें।&quot;
-                    </p>
-
-                    <hr className="border-slate-100 my-2" />
-
-                    {/* English Quote */}
-                    <p className="text-[9px] md:text-[10.5px] text-slate-500 font-semibold italic leading-relaxed">
-                      &quot;Don't wait for the right opportunity, create it. Start your own digital business journey today and design your own path to financial freedom with Pulseshop.&quot;
-                    </p>
-                  </div>
+            <section className="px-3 pb-8 pt-4 bg-white" id="motivational-quote-box">
+              <div className="bg-white border-2 border-indigo-50 rounded-2xl p-8 shadow-sm max-w-lg mx-auto text-center">
+                <div className="space-y-3">
+                  <p className="text-[13px] md:text-sm text-indigo-700 font-black leading-tight">
+                    Sirf sapne mat dekho, apni doosri income banana shuru karo.
+                  </p>
+                  <p className="text-[13px] md:text-sm text-indigo-800 font-black leading-tight">
+                    Aaj ka Plan B, kal ki financial freedom ban sakta hai.
+                  </p>
+                  <p className="text-[13px] md:text-sm text-indigo-900 font-black leading-tight">
+                    Jab tak ek hi income par bharosa hai, tak tak risk zyada hai.
+                  </p>
+                  <p className="text-[13px] md:text-sm text-indigo-800 font-black leading-tight">
+                    Smart log salary ke saath online income bhi banate hain.
+                  </p>
+                  <p className="text-[13px] md:text-sm text-indigo-700 font-black leading-tight">
+                    Plan B shuru karo — kyunki future kisi ko bata kar nahi aata.
+                  </p>
                 </div>
               </div>
             </section>
