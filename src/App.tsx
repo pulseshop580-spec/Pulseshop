@@ -59,23 +59,43 @@ export default function App() {
 
   // Orders tracking state for Admin Approvals - now synced with Firestore
   const [orders, setOrders] = useState<Order[]>([]);
+  const [isOrdersLoading, setIsOrdersLoading] = useState(true);
 
   // Fetch orders from Firestore in real-time
   useEffect(() => {
-    // Anonymous sign-in to satisfy Firestore security rules
-    signInAnonymously(auth).catch(err => console.error("Firebase Auth Error:", err));
+    let unsubscribe: (() => void) | undefined;
 
-    const q = query(collection(db, 'orders'), orderBy('timestamp', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const ordersData = snapshot.docs.map(d => ({
-        ...d.data(),
-        id: d.id, // Use firestore document ID
-      })) as Order[];
-      setOrders(ordersData);
-    }, (error) => {
-      console.error("Error fetching orders:", error);
+    const setupOrdersListener = () => {
+      const q = query(collection(db, 'orders'), orderBy('timestamp', 'desc'));
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        const ordersData = snapshot.docs.map(d => ({
+          ...d.data(),
+          id: d.id,
+        })) as Order[];
+        setOrders(ordersData);
+        setIsOrdersLoading(false);
+      }, (error) => {
+        console.error("Error fetching orders:", error);
+        setIsOrdersLoading(false);
+      });
+    };
+
+    // Anonymous sign-in and listen to auth changes
+    const authUnsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in, setup listener
+        if (unsubscribe) unsubscribe();
+        setupOrdersListener();
+      } else {
+        // Not signed in, try signing in anonymously
+        signInAnonymously(auth).catch(err => console.error("Firebase Auth Error:", err));
+      }
     });
-    return () => unsubscribe();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+      authUnsubscribe();
+    };
   }, []);
 
   const [isAdmin, setIsAdmin] = useState(false);
@@ -127,6 +147,7 @@ export default function App() {
     } catch (error) {
       console.error("Error creating order in Firestore:", error);
       alert("ऑर्डर सबमिट करने में समस्या आई। कृपया पुनः प्रयास करें।");
+      throw error;
     }
   };
 
@@ -851,16 +872,25 @@ export default function App() {
 
         {/* TAB 4: ADMIN DASHBOARD VIEW */}
         {isAdmin && activeTab === 'admin' && (
-          <AdminDashboard 
-            orders={orders}
-            plans={PLANS.filter(p => !deletedPlanIds.includes(p.id))}
-            onApprove={handleApproveOrder}
-            onReject={handleRejectOrder}
-            onDeleteOrder={handleDeleteOrder}
-            onDeletePlan={handleDeletePlan}
-            onAddDemoOrder={handleAddDemoOrder}
-            onGoToHome={() => setActiveTab('home')}
-          />
+          <div className="animate-fadeIn">
+            {isOrdersLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 gap-4">
+                <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+                <p className="text-slate-500 font-bold">लोड हो रहा है... (Loading Orders...)</p>
+              </div>
+            ) : (
+              <AdminDashboard 
+                orders={orders}
+                plans={PLANS.filter(p => !deletedPlanIds.includes(p.id))}
+                onApprove={handleApproveOrder}
+                onReject={handleRejectOrder}
+                onDeleteOrder={handleDeleteOrder}
+                onDeletePlan={handleDeletePlan}
+                onAddDemoOrder={handleAddDemoOrder}
+                onGoToHome={() => setActiveTab('home')}
+              />
+            )}
+          </div>
         )}
 
         {/* TAB 5: PRIVACY POLICY VIEW */}

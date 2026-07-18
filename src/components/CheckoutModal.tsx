@@ -51,7 +51,6 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
   // Payment proof & thank you page states
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string>('');
-  const [isConfirmingProof, setIsConfirmingProof] = useState(false);
   const [isSimulatingDownload, setIsSimulatingDownload] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
 
@@ -71,7 +70,7 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
       setCopiedUpi(false);
       setScreenshotFile(null);
       setScreenshotPreview('');
-      setIsConfirmingProof(false);
+      setIsSubmitting(false);
       setIsSimulatingDownload(false);
       setDownloadProgress(0);
       
@@ -297,23 +296,23 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
     }
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Step 3 Confirmation: Transitions to Step 4 (Thank You Page)
-  const handleConfirmProof = () => {
+  const handleConfirmProof = async () => {
     if (!screenshotFile) {
       alert("कृपया भुगतान का स्क्रीनशॉट अपलोड करें। (Please upload payment screenshot to proceed)");
       return;
     }
     
-    setIsConfirmingProof(true);
+    setIsSubmitting(true);
     
-    setTimeout(() => {
-      setIsConfirmingProof(false);
-      
+    try {
       const emailVal = email.trim();
       const phoneVal = phone.trim();
       const nameVal = `${firstName.trim()} ${lastName.trim()}`;
       
-      // Save purchase info to globally stored User profile but keep purchasedPlans as-is (requires admin approval first)
+      // Save purchase info to globally stored User profile
       setUser(prev => ({
         ...prev,
         name: nameVal,
@@ -322,7 +321,8 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
       }));
       
       if (onOrderCreated && plan) {
-        onOrderCreated({
+        // Wait for Firestore to confirm receipt
+        await onOrderCreated({
           id: orderId.toString(),
           customerName: nameVal,
           customerPhone: phoneVal,
@@ -343,8 +343,14 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
           plan: plan
         });
       }
+      
       onClose(); // Close the modal
-    }, 1800);
+    } catch (error) {
+      console.error("Order creation failed:", error);
+      alert("ऑर्डर सबमिट करने में विफल। कृपया अपना इंटरनेट कनेक्शन जांचें।");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Thank you page helper: get formatted date
@@ -1049,13 +1055,13 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
               <button 
                 type="button"
                 onClick={handleConfirmProof}
-                disabled={isConfirmingProof}
+                disabled={isSubmitting}
                 className="bg-[#0051fa] hover:bg-[#0041cb] text-white font-bold text-sm md:text-[15px] px-6 py-2.5 rounded shadow-xs active:scale-97 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
-                {isConfirmingProof ? (
+                {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Verifying...
+                    Submitting...
                   </>
                 ) : (
                   'Confirm'
