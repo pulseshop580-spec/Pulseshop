@@ -14,12 +14,13 @@ interface CheckoutModalProps {
   onSuccess: (planId: 'plan-a' | 'plan-b') => void;
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
-  onOrderCreated?: (order: Order) => void;
+  onOrderCreated?: (order: Order) => Promise<boolean> | void;
   onThankYou?: (data: { orderId: string, email: string, plan: Plan }) => void;
 }
 
 export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, setUser, onOrderCreated, onThankYou }: CheckoutModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1); // 1: Billing, 2: QR Payment, 3: Payment Proof Page, 4: Thank You Page
+  const [showFinalSuccess, setShowFinalSuccess] = useState(false);
   
   // Form fields matching the WooCommerce checkout screenshot
   const [firstName, setFirstName] = useState('');
@@ -74,6 +75,7 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
       setIsConfirmingProof(false);
       setIsSimulatingDownload(false);
       setDownloadProgress(0);
+      setShowFinalSuccess(false);
       
       // Generate random order ID around #230 - #290
       setOrderId(Math.floor(Math.random() * 60) + 230);
@@ -298,7 +300,7 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
   };
 
   // Step 3 Confirmation: Transitions to Step 4 (Thank You Page)
-  const handleConfirmProof = () => {
+  const handleConfirmProof = async () => {
     if (!screenshotFile) {
       alert("कृपया भुगतान का स्क्रीनशॉट अपलोड करें। (Please upload payment screenshot to proceed)");
       return;
@@ -306,14 +308,40 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
     
     setIsConfirmingProof(true);
     
+    const emailVal = email.trim();
+    const phoneVal = phone.trim();
+    const nameVal = `${firstName.trim()} ${lastName.trim()}`;
+    
+    if (onOrderCreated && plan) {
+      const orderData: Order = {
+        id: orderId.toString(),
+        customerName: nameVal,
+        customerPhone: phoneVal,
+        customerEmail: emailVal,
+        planId: plan.id,
+        planName: plan.name,
+        amount: total,
+        screenshot: screenshotPreview || '',
+        status: 'pending',
+        date: getCurrentFormattedDate()
+      };
+
+      const result = onOrderCreated(orderData);
+      if (result instanceof Promise) {
+        const success = await result;
+        if (!success) {
+          setIsConfirmingProof(false);
+          return;
+        }
+      }
+    }
+
+    // Small delay for psychological "verification"
     setTimeout(() => {
       setIsConfirmingProof(false);
+      setShowFinalSuccess(true);
       
-      const emailVal = email.trim();
-      const phoneVal = phone.trim();
-      const nameVal = `${firstName.trim()} ${lastName.trim()}`;
-      
-      // Save purchase info to globally stored User profile but keep purchasedPlans as-is (requires admin approval first)
+      // Save purchase info to globally stored User profile
       setUser(prev => ({
         ...prev,
         name: nameVal,
@@ -321,30 +349,18 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
         email: emailVal,
       }));
       
-      if (onOrderCreated && plan) {
-        onOrderCreated({
-          id: orderId.toString(),
-          customerName: nameVal,
-          customerPhone: phoneVal,
-          customerEmail: emailVal,
-          planId: plan.id,
-          planName: plan.name,
-          amount: total,
-          screenshot: screenshotPreview || '',
-          status: 'pending',
-          date: getCurrentFormattedDate()
-        });
-      }
-
-      if (onThankYou && plan) {
-        onThankYou({
-          orderId: orderId.toString(),
-          email: emailVal,
-          plan: plan
-        });
-      }
-      onClose(); // Close the modal
-    }, 1800);
+      // Final delay to show success before switching to Thank You view
+      setTimeout(() => {
+        if (onThankYou && plan) {
+          onThankYou({
+            orderId: orderId.toString(),
+            email: emailVal,
+            plan: plan
+          });
+        }
+        onClose(); // Close the modal
+      }, 1500);
+    }, 1200);
   };
 
   // Thank you page helper: get formatted date
@@ -1032,6 +1048,15 @@ export default function CheckoutModal({ isOpen, onClose, plan, onSuccess, user, 
                 <p className="text-[#2d3748] font-normal text-sm md:text-[15px] leading-relaxed text-center mt-5 select-text">
                   अपने जो Payment किया है उसका Screen Shot यहाँ अपलोड कर के &quot;Confirm&quot; पर क्लिक करें.... हम आपके लेनदेन को मैन्युअल रूप से सत्यापित करेंगे।
                 </p>
+
+                {showFinalSuccess && (
+                  <div className="mt-6 flex flex-col items-center gap-2 animate-bounce">
+                    <div className="bg-emerald-100 p-3 rounded-full">
+                      <Check className="w-8 h-8 text-emerald-600" />
+                    </div>
+                    <p className="text-emerald-700 font-black text-sm uppercase">Order Submitted Successfully!</p>
+                  </div>
+                )}
 
               </div>
             </div>

@@ -105,7 +105,7 @@ export default function App() {
     setDeletedPlanIds(prev => [...prev, planId]);
   };
 
-  const handleOrderCreated = async (newOrder: Order) => {
+  const handleOrderCreated = async (newOrder: Order): Promise<boolean> => {
     try {
       // Add to Firestore instead of local state
       await addDoc(collection(db, 'orders'), {
@@ -120,9 +120,11 @@ export default function App() {
         date: newOrder.date,
         timestamp: serverTimestamp() // Add timestamp for ordering
       });
+      return true;
     } catch (error) {
       console.error("Error creating order in Firestore:", error);
       alert("ऑर्डर सबमिट करने में समस्या आई। कृपया पुनः प्रयास करें।");
+      return false;
     }
   };
 
