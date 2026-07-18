@@ -5,7 +5,8 @@ import {
   Tv, MessageSquare, Award, ArrowUpRight, TrendingUp, DollarSign, X
 } from 'lucide-react';
 import { collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
-import { db } from './lib/firebase';
+import { signInAnonymously } from 'firebase/auth';
+import { db, auth } from './lib/firebase';
 import { Tab, Plan, User, EarningAlert, Order } from './types';
 import { PLANS, VIDEO_EPISODES, EARNING_ALERTS, FAQS } from './data';
 import Header from './components/Header';
@@ -59,17 +60,24 @@ export default function App() {
   // Orders tracking state for Admin Approvals - now synced with Firestore
   const [orders, setOrders] = useState<Order[]>([]);
 
+  // Sign in anonymously to satisfy Firestore rules
+  useEffect(() => {
+    signInAnonymously(auth).catch(err => console.error("Auth Error:", err));
+  }, []);
+
   // Fetch orders from Firestore in real-time
   useEffect(() => {
+    console.log("Setting up Firestore real-time listener...");
     const q = query(collection(db, 'orders'), orderBy('timestamp', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      console.log(`Firestore Update: Received ${snapshot.docs.length} orders`);
       const ordersData = snapshot.docs.map(d => ({
         ...d.data(),
         id: d.id, // Use firestore document ID
       })) as Order[];
       setOrders(ordersData);
     }, (error) => {
-      console.error("Error fetching orders:", error);
+      console.error("Firestore Error Fetching Orders:", error);
     });
     return () => unsubscribe();
   }, []);

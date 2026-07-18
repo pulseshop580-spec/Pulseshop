@@ -11,6 +11,7 @@ export interface Order {
   screenshot: string; // Base64 or mock image representation
   status: 'pending' | 'approved' | 'rejected';
   date: string;
+  timestamp?: any;
 }
 
 export interface Plan {
