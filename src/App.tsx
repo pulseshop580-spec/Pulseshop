@@ -82,6 +82,34 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // Sync approved orders from Firestore to local purchasedPlans
+  useEffect(() => {
+    if (!user.email) return;
+    
+    const userEmailLower = user.email.toLowerCase();
+    const approvedPlanIdsFromFirestore = orders
+      .filter(o => o.customerEmail.toLowerCase() === userEmailLower && o.status === 'approved')
+      .map(o => o.planId);
+    
+    if (approvedPlanIdsFromFirestore.length > 0) {
+      setUser(prev => {
+        const currentPlans = prev.purchasedPlans || [];
+        const newPlans = [...currentPlans];
+        let changed = false;
+        approvedPlanIdsFromFirestore.forEach(id => {
+          if (!newPlans.includes(id)) {
+            newPlans.push(id);
+            changed = true;
+          }
+        });
+        if (changed) {
+          return { ...prev, purchasedPlans: newPlans };
+        }
+        return prev;
+      });
+    }
+  }, [orders, user.email]);
+
   const [isAdmin, setIsAdmin] = useState(false);
   const adminPassword = 'DDhj12@$';
 
@@ -306,7 +334,7 @@ export default function App() {
         onClose={() => setIsSidebarOpen(false)}
         onNavToTab={(tab) => setActiveTab(tab)}
         isAdmin={isAdmin}
-        purchasedPlans={user.purchasedPlans}
+        purchasedPlans={user.purchasedPlans || []}
       />
 
       {/* MAIN CONTAINER */}

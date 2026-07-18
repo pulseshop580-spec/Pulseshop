@@ -29,14 +29,34 @@ export default function BottomNav({ activeTab, setActiveTab, hasPurchasedAny, pe
           <span className="text-[10px] tracking-wide">Home</span>
         </button>
 
-        {/* 2. Downloads */}
-        <button
-          onClick={() => setActiveTab('home')}
-          className="flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all text-slate-400 hover:text-emerald-600"
+        {/* 2. Downloads / Play */}
+        <a
+          href={hasPurchasedAny ? "https://drive.google.com/drive/folders/1srUiWfChdz34SpmBzKFh8E8uXKm-Z4iA" : "#"}
+          target={hasPurchasedAny ? "_blank" : undefined}
+          rel={hasPurchasedAny ? "noopener noreferrer" : undefined}
+          onClick={(e) => {
+            if (!hasPurchasedAny) {
+              e.preventDefault();
+              setActiveTab('home');
+              const plansSection = document.getElementById('plans-section');
+              plansSection?.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all ${
+            hasPurchasedAny ? 'text-emerald-600' : 'text-slate-400 hover:text-emerald-600'
+          }`}
+          id="nav-tab-downloads"
         >
-          <Download className="w-5 h-5" />
-          <span className="text-[10px] tracking-wide">Downloads</span>
-        </button>
+          {hasPurchasedAny ? (
+            <div className="relative">
+              <Play className="w-5 h-5 fill-emerald-600" />
+              <span className="absolute -top-1 -right-1 bg-red-500 w-2 h-2 rounded-full animate-ping"></span>
+            </div>
+          ) : (
+            <Download className="w-5 h-5" />
+          )}
+          <span className="text-[10px] tracking-wide">{hasPurchasedAny ? 'PLAY' : 'Downloads'}</span>
+        </a>
 
         {/* 3. Account */}
         <button

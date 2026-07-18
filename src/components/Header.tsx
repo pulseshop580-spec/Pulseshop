@@ -28,6 +28,17 @@ export default function Header({ cartCount, hasPurchased, onMenuClick, onCartCli
       </div>
 
       <div className="flex items-center gap-4">
+        {hasPurchased && (
+          <a 
+            href="https://drive.google.com/drive/folders/1srUiWfChdz34SpmBzKFh8E8uXKm-Z4iA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 bg-emerald-600 text-white px-2 py-1 rounded-full text-[9px] font-black animate-pulse shadow-lg"
+          >
+            <Play className="w-2.5 h-2.5 fill-white" />
+            <span>PLAY</span>
+          </a>
+        )}
         <button 
           onClick={onCartClick}
           className="relative p-1.5 hover:bg-slate-800/50 rounded-full transition-colors active:scale-95"
