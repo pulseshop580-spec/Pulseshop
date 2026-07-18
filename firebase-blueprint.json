@@ -1,0 +1,20 @@
+{
+  "collections": {
+    "orders": {
+      "customerEmail": "string",
+      "customerName": "string",
+      "customerPhone": "string",
+      "planId": "string",
+      "planName": "string",
+      "amount": "number",
+      "status": "string",
+      "timestamp": "number",
+      "transactionId": "string",
+      "utrNumber": "string"
+    },
+    "users": {
+      "email": "string",
+      "purchasedPlans": "array"
+    }
+  }
+}

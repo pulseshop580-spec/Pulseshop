@@ -4,6 +4,9 @@ import {
   ShieldCheck, Phone, Video, Download, Lock, Star, Play, 
   Tv, MessageSquare, Award, ArrowUpRight, TrendingUp, DollarSign, X
 } from 'lucide-react';
+import { collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { signInAnonymously } from 'firebase/auth';
+import { db, auth } from './lib/firebase';
 import { Tab, Plan, User, EarningAlert, Order } from './types';
 import { PLANS, VIDEO_EPISODES, EARNING_ALERTS, FAQS } from './data';
 import Header from './components/Header';
@@ -54,18 +57,26 @@ export default function App() {
     localStorage.setItem('pn_user_profile', JSON.stringify(user));
   }, [user]);
 
-  // Orders tracking state for Admin Approvals
-  const [orders, setOrders] = useState<Order[]>(() => {
-    const saved = localStorage.getItem('pulseshop_orders');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        // ignore
-      }
-    }
-    return [];
-  });
+  // Orders tracking state for Admin Approvals - now synced with Firestore
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  // Fetch orders from Firestore in real-time
+  useEffect(() => {
+    // Anonymous sign-in to satisfy Firestore security rules
+    signInAnonymously(auth).catch(err => console.error("Firebase Auth Error:", err));
+
+    const q = query(collection(db, 'orders'), orderBy('timestamp', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const ordersData = snapshot.docs.map(d => ({
+        ...d.data(),
+        id: d.id, // Use firestore document ID
+      })) as Order[];
+      setOrders(ordersData);
+    }, (error) => {
+      console.error("Error fetching orders:", error);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const adminPassword = 'DDhj12@$';
@@ -90,11 +101,6 @@ export default function App() {
     return false;
   };
 
-  // Save orders to localStorage
-  useEffect(() => {
-    localStorage.setItem('pulseshop_orders', JSON.stringify(orders));
-  }, [orders]);
-
   useEffect(() => {
     localStorage.setItem('pulseshop_deleted_plans', JSON.stringify(deletedPlanIds));
   }, [deletedPlanIds]);
@@ -103,51 +109,71 @@ export default function App() {
     setDeletedPlanIds(prev => [...prev, planId]);
   };
 
-  const handleOrderCreated = (newOrder: Order) => {
-    setOrders(prev => {
-      if (prev.some(o => o.id === newOrder.id)) {
-        return prev;
+  const handleOrderCreated = async (newOrder: Order) => {
+    try {
+      // Add to Firestore instead of local state
+      await addDoc(collection(db, 'orders'), {
+        customerName: newOrder.customerName,
+        customerPhone: newOrder.customerPhone,
+        customerEmail: newOrder.customerEmail,
+        planId: newOrder.planId,
+        planName: newOrder.planName,
+        amount: newOrder.amount,
+        screenshot: newOrder.screenshot,
+        status: 'pending',
+        date: newOrder.date,
+        timestamp: serverTimestamp() // Add timestamp for ordering
+      });
+    } catch (error) {
+      console.error("Error creating order in Firestore:", error);
+      alert("ऑर्डर सबमिट करने में समस्या आई। कृपया पुनः प्रयास करें।");
+    }
+  };
+
+  const handleApproveOrder = async (orderId: string) => {
+    try {
+      const orderRef = doc(db, 'orders', orderId);
+      await updateDoc(orderRef, { status: 'approved' });
+      
+      // Local state update for current user immediate feedback if it's their order
+      const order = orders.find(o => o.id === orderId);
+      if (order && order.customerEmail.toLowerCase() === user.email.toLowerCase()) {
+        setUser(prevUser => {
+          const purchased = [...prevUser.purchasedPlans];
+          if (!purchased.includes(order.planId)) {
+            purchased.push(order.planId);
+          }
+          return {
+            ...prevUser,
+            purchasedPlans: purchased
+          };
+        });
       }
-      return [newOrder, ...prev];
-    });
+    } catch (error) {
+      console.error("Error approving order:", error);
+    }
   };
 
-  const handleApproveOrder = (orderId: string) => {
-    setOrders(prev => prev.map(o => {
-      if (o.id === orderId) {
-        const approvedOrder = { ...o, status: 'approved' as const };
-        
-        // If order matches the current user's email, unlock it on their profile
-        if (approvedOrder.customerEmail.toLowerCase() === user.email.toLowerCase()) {
-          setUser(prevUser => {
-            const purchased = [...prevUser.purchasedPlans];
-            if (!purchased.includes(approvedOrder.planId)) {
-              purchased.push(approvedOrder.planId);
-            }
-            return {
-              ...prevUser,
-              purchasedPlans: purchased
-            };
-          });
-        }
-        return approvedOrder;
-      }
-      return o;
-    }));
+  const handleRejectOrder = async (orderId: string) => {
+    try {
+      const orderRef = doc(db, 'orders', orderId);
+      await updateDoc(orderRef, { status: 'rejected' });
+    } catch (error) {
+      console.error("Error rejecting order:", error);
+    }
   };
 
-  const handleRejectOrder = (orderId: string) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'rejected' as const } : o));
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!window.confirm('क्या आप इस ऑर्डर को हटाना चाहते हैं?')) return;
+    try {
+      await deleteDoc(doc(db, 'orders', orderId));
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    }
   };
 
-  const handleDeleteOrder = (orderId: string) => {
-    setOrders(prev => prev.filter(o => o.id !== orderId));
-  };
-
-  const handleAddDemoOrder = () => {
-    const demoId = Math.floor(Math.random() * 900) + 100;
-    const demoOrder: Order = {
-      id: demoId.toString(),
+  const handleAddDemoOrder = async () => {
+    const demoOrder = {
       customerName: "Rahul Sharma (डेमो)",
       customerPhone: "9876543210",
       customerEmail: user.email || "demo@pulseshop.com",
@@ -158,7 +184,15 @@ export default function App() {
       status: "pending",
       date: new Date().toLocaleDateString('en-IN')
     };
-    setOrders(prev => [demoOrder, ...prev]);
+    
+    try {
+      await addDoc(collection(db, 'orders'), {
+        ...demoOrder,
+        timestamp: serverTimestamp()
+      });
+    } catch (error) {
+      console.error("Error adding demo order:", error);
+    }
   };
 
   // Live Earning Alert Rotating State
